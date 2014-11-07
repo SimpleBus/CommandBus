@@ -23,7 +23,7 @@ Using Composer:
 
         public $email;
 
-        public function getName()
+        public function name()
         {
             return self::NAME;
         }
@@ -33,6 +33,9 @@ Using Composer:
 2. Create a command handler
 
     ```php
+    use SimpleBus\Command\Command;
+    use SimpleBus\Command\Handler\CommandHandler;
+
     class RegisterUserCommandHandler implements CommandHandler
     {
         public function handle(Command $command)
@@ -46,6 +49,7 @@ Using Composer:
 
     ```php
     use SimpleBus\Command\Bus\DelegatesToCommandHandlers;
+    use SimpleBus\Command\Handler\LazyLoadingCommandHandlerResolver;
 
     $commandHandlerResolver = new LazyLoadingCommandHandlerResolver(
         function ($serviceId) {
@@ -74,7 +78,7 @@ sure that the first command is fully handled first:
 use SimpleBus\Command\Bus\FinishesCommandBeforeHandlingNext;
 
 $commandBusWrapper = new FinishesCommandBeforeHandlingNext();
-$commandBusWrapper->setNext($specializedCommandBus);
+$commandBusWrapper->setNext($commandBus);
 
 $commandBusWrapper->handle($registerUserCommand);
 ```
@@ -89,6 +93,7 @@ If your command bus needs to call the next command bus in the chain, use the `Re
 duplication:
 
 ```php
+use SimpleBus\Command\Bus\RemembersNext;
 
 class SpecializedCommandBus implements CommandBus
 {
