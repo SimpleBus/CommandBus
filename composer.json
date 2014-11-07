@@ -19,6 +19,12 @@
     "require-dev": {
         "phpunit/phpunit": "~3.7"
     },
+    "suggest": {
+        "simple-bus/event-bus": "Simple event bus implementation",
+        "simple-bus/command-event-bridge": "Bridge for using both command buses and event buses",
+        "simple-bus/doctrine-orm-bridge": "Bridge for using command buses and event buses with Doctrine ORM",
+        "simple-bus/symfony-bridge": "Bridge for using command buses and event buses with Symfony"
+    },
     "autoload": {
         "psr-4" : { "SimpleBus\\Command\\" : "src" }
     },
