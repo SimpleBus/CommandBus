@@ -14,58 +14,58 @@ Using Composer:
 
 1. Create a command
 
-```php
-use SimpleBus\Command\Command;
+    ```php
+    use SimpleBus\Command\Command;
 
-class RegisterUserCommand implements Command
-{
-    const NAME = 'register_user';
-
-    public $email;
-
-    public function getName()
+    class RegisterUserCommand implements Command
     {
-        return self::NAME;
+        const NAME = 'register_user';
+
+        public $email;
+
+        public function getName()
+        {
+            return self::NAME;
+        }
     }
-}
-```
+    ```
 
 2. Create a command handler
 
-```php
-class RegisterUserCommandHandler implements CommandHandler
-{
-    public function handle(Command $command)
+    ```php
+    class RegisterUserCommandHandler implements CommandHandler
     {
-        // do anything to handle the command
+        public function handle(Command $command)
+        {
+            // do anything to handle the command
+        }
     }
-}
-```
+    ```
 
 3. Set up the command bus and the command handler resolver:
 
-```php
-use SimpleBus\Command\Bus\DelegatesToCommandHandlers;
+    ```php
+    use SimpleBus\Command\Bus\DelegatesToCommandHandlers;
 
-$commandHandlerResolver = new LazyLoadingCommandHandlerResolver(
-    function ($serviceId) {
-        // lazily load/create an instance of the command handler, e.g. using a service locator
-         $handler = ...;
+    $commandHandlerResolver = new LazyLoadingCommandHandlerResolver(
+        function ($serviceId) {
+            // lazily load/create an instance of the command handler, e.g. using a service locator
+             $handler = ...;
 
-         return $handler;
-    },
-    array(
-        RegisterUserCommand::NAME => 'register_user_command_handler_service_id'
-    )
-);
+             return $handler;
+        },
+        array(
+            RegisterUserCommand::NAME => 'register_user_command_handler_service_id'
+        )
+    );
 
-$commandBus = new DelegatesToCommandHandlers($commandHandlerResolver);
+    $commandBus = new DelegatesToCommandHandlers($commandHandlerResolver);
 
-$registerUserCommand = new RegisterUserCommand();
-$registerUserCommand->email = 'matthiasnoback@gmail.com';
+    $registerUserCommand = new RegisterUserCommand();
+    $registerUserCommand->email = 'matthiasnoback@gmail.com';
 
-$commandBus->handle($registerUserCommand);
-```
+    $commandBus->handle($registerUserCommand);
+    ```
 
 Because a command handler might call the command bus to handle new commands, it's better to wrap the command bus to make
 sure that the first command is fully handled first:
@@ -106,6 +106,6 @@ class SpecializedCommandBus implements CommandBus
 
 ### Load command handlers in a different way
 
-`The `DelegatesToCommandHandlers` command bus uses a `CommandHandlerResolver` to find the right handler for a given
+The `DelegatesToCommandHandlers` command bus uses a `CommandHandlerResolver` to find the right handler for a given
 command object. You can implement your own strategy for that of course, just make sure your class implements the
 `CommandHandlerResolver` interface.
