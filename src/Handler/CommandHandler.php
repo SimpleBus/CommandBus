@@ -2,12 +2,11 @@
 
 namespace SimpleBus\Command\Handler;
 
-use SimpleBus\Command\Command;
-
 interface CommandHandler
 {
     /**
+     * @param $command
      * @return void
      */
-    public function handle(Command $command);
+    public function handle($command);
 }
