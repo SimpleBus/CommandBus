@@ -4,7 +4,7 @@ namespace SimpleBus\Command\Bus;
 
 use SimpleBus\Command\Bus;
 use SimpleBus\Command\Command;
-use SimpleBus\Command\Handler\CommandHandlerResolver;
+use SimpleBus\Command\Handler\Resolver\CommandHandlerResolver;
 
 class DelegatesToCommandHandlers implements CommandBus
 {

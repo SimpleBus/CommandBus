@@ -1,6 +1,6 @@
 <?php
 
-namespace SimpleBus\Tests\Command;
+namespace SimpleBus\Command\Tests\Command;
 
 use SimpleBus\Command\Command;
 use SimpleBus\Command\Bus\CommandBus;
