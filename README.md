@@ -19,14 +19,7 @@ Using Composer:
 
     class RegisterUserCommand implements Command
     {
-        const NAME = 'register_user';
-
         public $email;
-
-        public function name()
-        {
-            return self::NAME;
-        }
     }
     ```
 
@@ -45,25 +38,36 @@ Using Composer:
     }
     ```
 
-3. Set up the command bus and the command handler resolver:
+3. Set up the command bus and the command handlers:
 
     ```php
-    use SimpleBus\Command\Bus\DelegatesToCommandHandlers;
-    use SimpleBus\Command\Handler\LazyLoadingCommandHandlerResolver;
 
-    $commandHandlerResolver = new LazyLoadingCommandHandlerResolver(
+    use SimpleBus\Command\Handler\Collection\LazyLoadingCommandHandlerCollection;
+    use SimpleBus\Command\Handler\Resolver\Name\ClassBased;
+    use SimpleBus\Command\Handler\LazyLoadingCommandHandlerResolver;
+    use SimpleBus\Command\Bus\Middleware\CommandBusSupportingMiddleware;
+    use SimpleBus\Command\Bus\Middleware\DelegatesToCommandHandlers;
+    use SimpleBus\Command\Handler\Resolver\NameBasedCommandHandlerResolver;
+
+    $commandHandlerCollection = new LazyLoadingCommandHandlerCollection(
+        array(
+            RegisterUserCommand::CLASS => 'register_user_command_handler_service_id'
+        ),
         function ($serviceId) {
             // lazily load/create an instance of the command handler, e.g. using a service locator
-             $handler = ...;
+            $handler = ...;
 
-             return $handler;
-        },
-        array(
-            RegisterUserCommand::NAME => 'register_user_command_handler_service_id'
-        )
+            return $handler;
+        }
+    );
+    $commandHandlerResolver = new NameBasedCommandHandlerResolver(
+        // we use the class-based command name resolver
+        new ClassBased(),
+        $commandHandlerCollection
     );
 
-    $commandBus = new DelegatesToCommandHandlers($commandHandlerResolver);
+    $commandBus = CommandBusSupportingMiddleware();
+    $commandBus->addMiddleware(new DelegatesToCommandHandlers($commandHandlerResolver));
 
     $registerUserCommand = new RegisterUserCommand();
     $registerUserCommand->email = 'matthiasnoback@gmail.com';
@@ -71,46 +75,42 @@ Using Composer:
     $commandBus->handle($registerUserCommand);
     ```
 
-Because a command handler might call the command bus to handle new commands, it's better to wrap the command bus to make
-sure that the first command is fully handled first:
+Because a command handler might call the command bus to handle new commands, it's better to use the
+`FinishesCommandBeforeHandlingNext` middleware to make sure that the first command is fully handled first:
 
 ```php
-use SimpleBus\Command\Bus\FinishesCommandBeforeHandlingNext;
+use SimpleBus\Command\Bus\Middleware\FinishesCommandBeforeHandlingNext;
 
-$commandBusWrapper = new FinishesCommandBeforeHandlingNext();
-$commandBusWrapper->setNext($commandBus);
-
-$commandBusWrapper->handle($registerUserCommand);
+$commandBus->addMiddleware(new FinishesCommandBeforeHandlingNext());
 ```
 
 ## Extension points
 
-### Specialized command buses
+### Specialized command bus middleware
 
-You can add your own specialized command bus implementations. You can chain them using `CommandBus::setNext()`.
+You can add your own specialized command bus middleware.
 
-If your command bus needs to call the next command bus in the chain, use the `RemembersNext` trait to prevent some code
-duplication:
+When your command bus middleware needs to call the next middleware in the chain, call the provided `$next` callable with
+the `$command` object as the only argument:
 
 ```php
-use SimpleBus\Command\Bus\RemembersNext;
+use SimpleBus\Command\Bus\Middleware\CommandBusMiddleware;
 
-class SpecializedCommandBus implements CommandBus
+class SpecializedCommandBusMiddleware implements CommandBusMiddleware
 {
-    use RemembersNext;
-
-    public function handle(Command $command)
+    public function handle(Command $command, callable $next)
     {
         ...
 
-        // call the next command bus in the chain
-        $this->next($command);
+        // call the next middleware in the chain
+        $next($command);
     }
 }
 ```
 
-### Load command handlers in a different way
+### Resolvers
 
-The `DelegatesToCommandHandlers` command bus uses a `CommandHandlerResolver` to find the right handler for a given
-command object. You can implement your own strategy for that of course, just make sure your class implements the
-`CommandHandlerResolver` interface.
+- The command name is resolved to its fully qualified class name. You can override this behavior by supplying a
+different implementation for `SimpleBus\Command\Handler\Resolver\Name\CommandNameResolver`.
+- The right command handler is determined based on the command name. You can override this behavior by suppling a
+different implementation for `SimpleBus\Command\Handler\Resolver\CommandHandlerResolver`.
