@@ -2,13 +2,8 @@
 
 namespace SimpleBus\Command\Bus;
 
-use SimpleBus\Command\Command;
+use SimpleBus\Message\Bus\MessageBus;
 
-interface CommandBus
+interface CommandBus extends MessageBus
 {
-    /**
-     * @param Command $command
-     * @return void
-     */
-    public function handle(Command $command);
 }
