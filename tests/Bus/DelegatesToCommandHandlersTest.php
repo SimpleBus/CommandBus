@@ -2,7 +2,7 @@
 
 namespace SimpleBus\Command\Tests\Bus;
 
-use SimpleBus\Command\Bus\DelegatesToCommandHandlers;
+use SimpleBus\Command\Bus\Middleware\DelegatesToCommandHandlers;
 use SimpleBus\Command\Command;
 
 class DelegatesToCommandHandlersTest extends \PHPUnit_Framework_TestCase
@@ -16,7 +16,7 @@ class DelegatesToCommandHandlersTest extends \PHPUnit_Framework_TestCase
         $commandHandler = $this->mockCommandHandlerShouldHandle($command);
         $commandHandlerResolver = $this->mockCommandHandlerResolverShouldResolve($command, $commandHandler);
 
-        $commandBus = new DelegatesToCommandHandlers($commandHandlerResolver);
+        $commandBus = new \SimpleBus\Command\Bus\Middleware\DelegatesToCommandHandlers($commandHandlerResolver);
 
         $nextIsCalled = false;
         $next = function(Command $actualCommand) use (&$nextIsCalled, $command) {

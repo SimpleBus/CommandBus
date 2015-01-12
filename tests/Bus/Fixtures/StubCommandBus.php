@@ -2,10 +2,10 @@
 
 namespace SimpleBus\Command\Tests\Bus\Fixtures;
 
-use SimpleBus\Command\Bus\StackedCommandBus;
+use SimpleBus\Command\Bus\Middleware\CommandBusMiddleware;
 use SimpleBus\Command\Command;
 
-class StubCommandBus implements StackedCommandBus
+class StubCommandBus implements CommandBusMiddleware
 {
     /**
      * @var callable

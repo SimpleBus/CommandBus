@@ -1,12 +1,12 @@
 <?php
 
-namespace SimpleBus\Command\Bus;
+namespace SimpleBus\Command\Bus\Middleware;
 
 use SimpleBus\Command\Bus;
 use SimpleBus\Command\Command;
 use SimpleBus\Command\Handler\Resolver\CommandHandlerResolver;
 
-class DelegatesToCommandHandlers implements StackedCommandBus
+class DelegatesToCommandHandlers implements CommandBusMiddleware
 {
     private $commandHandlerResolver;
 

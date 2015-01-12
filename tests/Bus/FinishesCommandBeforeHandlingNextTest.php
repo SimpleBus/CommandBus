@@ -2,9 +2,9 @@
 
 namespace SimpleBus\Command\Tests\Command;
 
-use SimpleBus\Command\Bus\CommandBusStack;
+use SimpleBus\Command\Bus\Middleware\SupportsMiddleware;
 use SimpleBus\Command\Command;
-use SimpleBus\Command\Bus\FinishesCommandBeforeHandlingNext;
+use SimpleBus\Command\Bus\Middleware\FinishesCommandBeforeHandlingNext;
 use SimpleBus\Command\Tests\Bus\Fixtures\StubCommandBus;
 
 class FinishesCommandBeforeHandlingNextTest extends \PHPUnit_Framework_TestCase
@@ -18,7 +18,7 @@ class FinishesCommandBeforeHandlingNextTest extends \PHPUnit_Framework_TestCase
         $newCommand = $this->dummyCommand();
         $whatHappened = [];
 
-        $commandBus = new CommandBusStack();
+        $commandBus = new SupportsMiddleware();
         $commandBus->addCommandBus(new FinishesCommandBeforeHandlingNext());
         $commandBus->addCommandBus(
             // the next command bus that will be called

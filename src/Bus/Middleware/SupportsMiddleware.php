@@ -1,13 +1,14 @@
 <?php
 
-namespace SimpleBus\Command\Bus;
+namespace SimpleBus\Command\Bus\Middleware;
 
+use SimpleBus\Command\Bus\CommandBus;
 use SimpleBus\Command\Command;
 
-class CommandBusStack implements CommandBus
+class SupportsMiddleware implements CommandBus
 {
     /**
-     * @var StackedCommandBus[]
+     * @var CommandBusMiddleware[]
      */
     private $stackedCommandBuses = [];
 
@@ -18,7 +19,7 @@ class CommandBusStack implements CommandBus
         }
     }
 
-    public function addCommandBus(StackedCommandBus $commandBus)
+    public function addCommandBus(CommandBusMiddleware $commandBus)
     {
         $this->stackedCommandBuses[] = $commandBus;
     }

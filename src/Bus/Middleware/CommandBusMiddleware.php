@@ -1,10 +1,10 @@
 <?php
 
-namespace SimpleBus\Command\Bus;
+namespace SimpleBus\Command\Bus\Middleware;
 
 use SimpleBus\Command\Command;
 
-interface StackedCommandBus
+interface CommandBusMiddleware
 {
     public function handle(Command $command, callable $next);
 }

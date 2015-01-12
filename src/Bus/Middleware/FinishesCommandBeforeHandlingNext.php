@@ -1,10 +1,10 @@
 <?php
 
-namespace SimpleBus\Command\Bus;
+namespace SimpleBus\Command\Bus\Middleware;
 
 use SimpleBus\Command\Command;
 
-class FinishesCommandBeforeHandlingNext implements StackedCommandBus
+class FinishesCommandBeforeHandlingNext implements CommandBusMiddleware
 {
     /**
      * @var array
