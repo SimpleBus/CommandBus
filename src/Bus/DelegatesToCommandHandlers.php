@@ -6,10 +6,8 @@ use SimpleBus\Command\Bus;
 use SimpleBus\Command\Command;
 use SimpleBus\Command\Handler\Resolver\CommandHandlerResolver;
 
-class DelegatesToCommandHandlers implements CommandBus
+class DelegatesToCommandHandlers implements StackedCommandBus
 {
-    use RemembersNext;
-
     private $commandHandlerResolver;
 
     public function __construct(CommandHandlerResolver $commandHandlerResolver)
@@ -17,10 +15,10 @@ class DelegatesToCommandHandlers implements CommandBus
         $this->commandHandlerResolver = $commandHandlerResolver;
     }
 
-    public function handle(Command $command)
+    public function handle(Command $command, callable $next)
     {
         $this->commandHandlerResolver->resolve($command)->handle($command);
 
-        $this->next($command);
+        $next($command);
     }
 }

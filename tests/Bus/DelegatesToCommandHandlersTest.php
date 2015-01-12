@@ -18,7 +18,15 @@ class DelegatesToCommandHandlersTest extends \PHPUnit_Framework_TestCase
 
         $commandBus = new DelegatesToCommandHandlers($commandHandlerResolver);
 
-        $commandBus->handle($command);
+        $nextIsCalled = false;
+        $next = function(Command $actualCommand) use (&$nextIsCalled, $command) {
+            $this->assertSame($command, $actualCommand);
+            $nextIsCalled = true;
+        };
+
+        $commandBus->handle($command, $next);
+
+        $this->assertTrue($nextIsCalled);
     }
 
     private function dummyCommand()

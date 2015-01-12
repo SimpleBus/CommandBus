@@ -2,82 +2,54 @@
 
 namespace SimpleBus\Command\Tests\Command;
 
+use SimpleBus\Command\Bus\CommandBusStack;
 use SimpleBus\Command\Command;
-use SimpleBus\Command\Bus\CommandBus;
 use SimpleBus\Command\Bus\FinishesCommandBeforeHandlingNext;
+use SimpleBus\Command\Tests\Bus\Fixtures\StubCommandBus;
 
 class FinishesCommandBeforeHandlingNextTest extends \PHPUnit_Framework_TestCase
 {
-    /** @var \SimpleBus\Command\Bus\FinishesCommandBeforeHandlingNext */
-    private $commandBus;
-
-    /** @var \PHPUnit_Framework_MockObject_MockObject|CommandBus */
-    private $next;
-
-    protected function setUp()
-    {
-        $this->commandBus = new FinishesCommandBeforeHandlingNext();
-        $this->next = $this->mockCommandBus();
-        $this->commandBus->setNext($this->next);
-    }
-
     /**
      * @test
      */
-    public function it_forwards_the_handle_call_to_the_next_command_bus()
-    {
-        $command = $this->dummyCommand();
-
-        $this->next
-            ->expects($this->once())
-            ->method('handle')
-            ->with($this->identicalTo($command));
-
-        $this->commandBus->handle($command);
-    }
-
-    /**
-     * @test
-     */
-    public function it_handles_commands_in_the_original_order_if_extra_commands_are_added_while_handling_the_first()
+    public function it_finishes_handling_a_command_before_handling_the_next()
     {
         $originalCommand = $this->dummyCommand();
-        $commandTriggeredByOriginalCommand = $this->dummyCommand();
+        $newCommand = $this->dummyCommand();
+        $whatHappened = [];
 
-        $orderOfEvents = array();
+        $commandBus = new CommandBusStack();
+        $commandBus->addCommandBus(new FinishesCommandBeforeHandlingNext());
+        $commandBus->addCommandBus(
+            // the next command bus that will be called
+            new StubCommandBus(
+                function (Command $actualCommand) use ($originalCommand, $newCommand, $commandBus, &$whatHappened) {
+                    $handledCommands[] = $actualCommand;
 
-        $commandBus = $this->commandBus;
-
-        $this->next
-            ->expects($this->any())
-            ->method('handle')
-            ->will(
-                $this->returnCallback(
-                    function ($command) use ($commandBus, $commandTriggeredByOriginalCommand, &$orderOfEvents) {
-                        $orderOfEvents[] = $command;
-                        if ($command !== $commandTriggeredByOriginalCommand) {
-                            $commandBus->handle($commandTriggeredByOriginalCommand);
-                            $orderOfEvents[] = 'finished handling original command';
-                        }
+                    if ($actualCommand === $originalCommand) {
+                        $whatHappened[] = 'start handling original command';
+                        // while handling the original we trigger a new command
+                        $commandBus->handle($newCommand);
+                        $whatHappened[] = 'finished handling original command';
+                    } elseif ($actualCommand === $newCommand) {
+                        $whatHappened[] = 'start handling new command';
+                        $whatHappened[] = 'finished handling new command';
                     }
-                )
-            );
+                }
+            )
+        );
 
-        $this->commandBus->handle($originalCommand);
+        $commandBus->handle($originalCommand);
 
         $this->assertSame(
-            array(
-                $originalCommand,
+            [
+                'start handling original command',
                 'finished handling original command',
-                $commandTriggeredByOriginalCommand
-            ),
-            $orderOfEvents
+                'start handling new command',
+                'finished handling new command'
+            ],
+            $whatHappened
         );
-    }
-
-    private function mockCommandBus()
-    {
-        return $this->getMock('SimpleBus\Command\Bus\CommandBus');
     }
 
     /**

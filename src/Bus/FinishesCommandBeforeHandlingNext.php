@@ -4,14 +4,22 @@ namespace SimpleBus\Command\Bus;
 
 use SimpleBus\Command\Command;
 
-class FinishesCommandBeforeHandlingNext implements CommandBus
+class FinishesCommandBeforeHandlingNext implements StackedCommandBus
 {
-    use RemembersNext;
+    /**
+     * @var array
+     */
+    private $queue = [];
 
-    private $queue = array();
+    /**
+     * @var bool
+     */
     private $isHandling = false;
 
-    public function handle(Command $command)
+    /**
+     * {@inheritdoc}
+     */
+    public function handle(Command $command, callable $next)
     {
         $this->queue[] = $command;
 
@@ -19,7 +27,7 @@ class FinishesCommandBeforeHandlingNext implements CommandBus
             $this->isHandling = true;
 
             while ($command = array_shift($this->queue)) {
-                $this->next($command);
+                $next($command);
             }
 
             $this->isHandling = false;
