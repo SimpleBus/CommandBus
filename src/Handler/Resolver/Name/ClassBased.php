@@ -3,11 +3,12 @@
 namespace SimpleBus\Command\Handler\Resolver\Name;
 
 use SimpleBus\Command\Command;
-use SimpleBus\Command\Handler\Resolver\Name\CommandNameResolver;
 
 class ClassBased implements CommandNameResolver
 {
     /**
+     * The unique name of a command is assumed to be its fully qualified class name
+     *
      * {@inheritdoc}
      */
     public function resolve(Command $command)

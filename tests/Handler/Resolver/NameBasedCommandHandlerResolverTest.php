@@ -3,6 +3,10 @@
 namespace SimpleBus\Command\Tests\Handler\Resolver;
 
 use PHPUnit_Framework_TestCase;
+use SimpleBus\Command\Command;
+use SimpleBus\Command\Handler\Collection\CommandHandlerCollection;
+use SimpleBus\Command\Handler\CommandHandler;
+use SimpleBus\Command\Handler\Resolver\Name\CommandNameResolver;
 use SimpleBus\Command\Handler\Resolver\NameBasedCommandHandlerResolver;
 
 class NameBasedCommandHandlerResolverTest extends PHPUnit_Framework_TestCase
@@ -32,11 +36,19 @@ class NameBasedCommandHandlerResolverTest extends PHPUnit_Framework_TestCase
         return $this->getMock('SimpleBus\Command\Handler\CommandHandler');
     }
 
+    /**
+     * @return \PHPUnit_Framework_MockObject_MockObject|Command
+     */
     private function dummyCommand()
     {
         return $this->getMock('SimpleBus\Command\Command');
     }
 
+    /**
+     * @param $command
+     * @param $commandName
+     * @return \PHPUnit_Framework_MockObject_MockObject|CommandNameResolver
+     */
     private function stubCommandNameResolver($command, $commandName)
     {
         $commandNameResolver = $this->getMock('SimpleBus\Command\Handler\Resolver\Name\CommandNameResolver');
@@ -50,6 +62,10 @@ class NameBasedCommandHandlerResolverTest extends PHPUnit_Framework_TestCase
         return $commandNameResolver;
     }
 
+    /**
+     * @param CommandHandler[] $commandHandlersByCommandName
+     * @return \PHPUnit_Framework_MockObject_MockObject|CommandHandlerCollection
+     */
     private function stubCommandHandlerCollection(array $commandHandlersByCommandName)
     {
         $commandHandlerCollection = $this->getMock('SimpleBus\Command\Handler\Collection\CommandHandlerCollection');

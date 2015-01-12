@@ -15,6 +15,11 @@ class DelegatesToCommandHandlers implements CommandBusMiddleware
         $this->commandHandlerResolver = $commandHandlerResolver;
     }
 
+    /**
+     * Handles the command by resolving the correct CommandHandler and calling it.
+     *
+     * {@inheritdoc}
+     */
     public function handle(Command $command, callable $next)
     {
         $this->commandHandlerResolver->resolve($command)->handle($command);

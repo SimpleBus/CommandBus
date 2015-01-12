@@ -2,7 +2,7 @@
 
 namespace SimpleBus\Command\Tests\Command;
 
-use SimpleBus\Command\Bus\Middleware\SupportsMiddleware;
+use SimpleBus\Command\Bus\Middleware\CommandBusSupportingMiddleware;
 use SimpleBus\Command\Command;
 use SimpleBus\Command\Bus\Middleware\FinishesCommandBeforeHandlingNext;
 use SimpleBus\Command\Tests\Bus\Fixtures\StubCommandBus;
@@ -18,9 +18,9 @@ class FinishesCommandBeforeHandlingNextTest extends \PHPUnit_Framework_TestCase
         $newCommand = $this->dummyCommand();
         $whatHappened = [];
 
-        $commandBus = new SupportsMiddleware();
-        $commandBus->addCommandBus(new FinishesCommandBeforeHandlingNext());
-        $commandBus->addCommandBus(
+        $commandBus = new CommandBusSupportingMiddleware();
+        $commandBus->addMiddleware(new FinishesCommandBeforeHandlingNext());
+        $commandBus->addMiddleware(
             // the next command bus that will be called
             new StubCommandBus(
                 function (Command $actualCommand) use ($originalCommand, $newCommand, $commandBus, &$whatHappened) {

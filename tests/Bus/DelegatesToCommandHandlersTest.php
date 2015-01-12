@@ -4,6 +4,8 @@ namespace SimpleBus\Command\Tests\Bus;
 
 use SimpleBus\Command\Bus\Middleware\DelegatesToCommandHandlers;
 use SimpleBus\Command\Command;
+use SimpleBus\Command\Handler\CommandHandler;
+use SimpleBus\Command\Handler\Resolver\CommandHandlerResolver;
 
 class DelegatesToCommandHandlersTest extends \PHPUnit_Framework_TestCase
 {
@@ -16,7 +18,7 @@ class DelegatesToCommandHandlersTest extends \PHPUnit_Framework_TestCase
         $commandHandler = $this->mockCommandHandlerShouldHandle($command);
         $commandHandlerResolver = $this->mockCommandHandlerResolverShouldResolve($command, $commandHandler);
 
-        $commandBus = new \SimpleBus\Command\Bus\Middleware\DelegatesToCommandHandlers($commandHandlerResolver);
+        $commandBus = new DelegatesToCommandHandlers($commandHandlerResolver);
 
         $nextIsCalled = false;
         $next = function(Command $actualCommand) use (&$nextIsCalled, $command) {
@@ -29,11 +31,18 @@ class DelegatesToCommandHandlersTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($nextIsCalled);
     }
 
+    /**
+     * @return \PHPUnit_Framework_MockObject_MockObject|Command
+     */
     private function dummyCommand()
     {
         return $this->getMock('SimpleBus\Command\Command');
     }
 
+    /**
+     * @param Command $command
+     * @return \PHPUnit_Framework_MockObject_MockObject|CommandHandler
+     */
     private function mockCommandHandlerShouldHandle(Command $command)
     {
         $commandHandler = $this->getMock('SimpleBus\Command\Handler\CommandHandler');
@@ -46,7 +55,12 @@ class DelegatesToCommandHandlersTest extends \PHPUnit_Framework_TestCase
         return $commandHandler;
     }
 
-    private function mockCommandHandlerResolverShouldResolve($command, $resolvedCommandHandler)
+    /**
+     * @param Command $command
+     * @param CommandHandler $resolvedCommandHandler
+     * @return \PHPUnit_Framework_MockObject_MockObject|CommandHandlerResolver
+     */
+    private function mockCommandHandlerResolverShouldResolve(Command $command, CommandHandler $resolvedCommandHandler)
     {
         $commandHandlerResolver = $this->getMock('SimpleBus\Command\Handler\Resolver\CommandHandlerResolver');
 

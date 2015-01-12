@@ -2,7 +2,7 @@
 
 namespace SimpleBus\Command\Tests\Bus;
 
-use SimpleBus\Command\Bus\Middleware\SupportsMiddleware;
+use SimpleBus\Command\Bus\Middleware\CommandBusSupportingMiddleware;
 use SimpleBus\Command\Command;
 
 class CommandBusStackTest extends \PHPUnit_Framework_TestCase
@@ -21,7 +21,7 @@ class CommandBusStackTest extends \PHPUnit_Framework_TestCase
         ];
 
         $command = $this->dummyCommand();
-        $commandBusStack = new SupportsMiddleware($stackedCommandBuses);
+        $commandBusStack = new CommandBusSupportingMiddleware($stackedCommandBuses);
         $commandBusStack->handle($command);
 
         $this->assertSame($stackedCommandBuses, $actualCommandBusesCalled);
@@ -33,7 +33,7 @@ class CommandBusStackTest extends \PHPUnit_Framework_TestCase
     public function it_works_with_no_command_buses()
     {
         $command = $this->dummyCommand();
-        $commandBusStack = new \SimpleBus\Command\Bus\Middleware\SupportsMiddleware([]);
+        $commandBusStack = new CommandBusSupportingMiddleware([]);
         $commandBusStack->handle($command);
     }
 
@@ -49,7 +49,7 @@ class CommandBusStackTest extends \PHPUnit_Framework_TestCase
         ];
 
         $command = $this->dummyCommand();
-        $commandBusStack = new SupportsMiddleware($stackedCommandBuses);
+        $commandBusStack = new CommandBusSupportingMiddleware($stackedCommandBuses);
         $commandBusStack->handle($command);
 
         $this->assertSame($stackedCommandBuses, $actualCommandBusesCalled);
@@ -74,6 +74,9 @@ class CommandBusStackTest extends \PHPUnit_Framework_TestCase
         return $commandBus;
     }
 
+    /**
+     * @return \PHPUnit_Framework_MockObject_MockObject|Command
+     */
     private function dummyCommand()
     {
         return $this->getMock('SimpleBus\Command\Command');

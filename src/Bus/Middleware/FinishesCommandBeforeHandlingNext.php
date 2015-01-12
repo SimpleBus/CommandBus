@@ -17,6 +17,9 @@ class FinishesCommandBeforeHandlingNext implements CommandBusMiddleware
     private $isHandling = false;
 
     /**
+     * Completely finishes handling the current command, before allowing other middlewares to start handling new
+     * commands.
+     *
      * {@inheritdoc}
      */
     public function handle(Command $command, callable $next)

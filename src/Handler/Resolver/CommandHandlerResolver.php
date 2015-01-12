@@ -8,9 +8,10 @@ use SimpleBus\Command\Handler\CommandHandler;
 interface CommandHandlerResolver
 {
     /**
+     * Resolve the CommandHandler for the given Command.
+     *
      * @param Command $command
      * @return CommandHandler
-     * @throws \InvalidArgumentException
      */
     public function resolve(Command $command);
 }

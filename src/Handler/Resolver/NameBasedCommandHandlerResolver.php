@@ -12,6 +12,7 @@ class NameBasedCommandHandlerResolver implements CommandHandlerResolver
      * @var CommandNameResolver
      */
     private $commandNameResolver;
+
     /**
      * @var \SimpleBus\Command\Handler\Collection\CommandHandlerCollection
      */
