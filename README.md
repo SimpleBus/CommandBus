@@ -1,6 +1,6 @@
 # SimpleBus
 
-[![Build Status](https://travis-ci.org/SimleBus/CommandBus.svg?branch=master)](https://travis-ci.org/SimpleBus/CommandBus)
+[![Build Status](https://travis-ci.org/SimleBus/CommandBus.svg?branch=1.0)](https://travis-ci.org/SimpleBus/CommandBus)
 
 By [Matthias Noback](http://php-and-symfony.matthiasnoback.nl/)
 
