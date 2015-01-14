@@ -1,5 +1,9 @@
 language: php
 
+branches:
+  except:
+    - master
+
 php:
   - 5.4
   - 5.5
