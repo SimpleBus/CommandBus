@@ -7,5 +7,5 @@ interface Command
     /**
      * @return string
      */
-    public function name();
+    public static function __messageName();
 }
