@@ -19,23 +19,23 @@ class LazyLoadingCommandHandlerResolver implements CommandHandlerResolver
     public function resolve(Command $command)
     {
         Assertion::string(
-            $command->name(),
+            $command->__messageName(),
             sprintf(
                 '%s::name() should return a string',
                 get_class($command)
             )
         );
 
-        if (!isset($this->commandHandlers[$command->name()])) {
+        if (!isset($this->commandHandlers[$command->__messageName()])) {
             throw new \InvalidArgumentException(
                 sprintf(
                     'No valid handler found for command "%s"',
-                    $command->name()
+                    $command->__messageName()
                 )
             );
         }
 
-        $serviceId = $this->commandHandlers[$command->name()];
+        $serviceId = $this->commandHandlers[$command->__messageName()];
         $commandHandler = call_user_func($this->serviceLocator, $serviceId);
 
         Assertion::isInstanceOf(
